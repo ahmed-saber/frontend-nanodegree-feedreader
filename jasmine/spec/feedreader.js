@@ -69,7 +69,7 @@ $(function () {
             // VARS
             let $body = $('body');
             let menuIsHidden = $body.hasClass('menu-hidden');
-            expect(menuIsHidden).toBe(true);
+            expect(menuIsHidden).toBeTruthy();
         });
 
         /* TODO: Write a test that ensures the menu changes
@@ -85,11 +85,11 @@ $(function () {
 
             $menuIcon.triggerHandler('click');
             menuIs = !$body.hasClass('menu-hidden');
-            expect(menuIs).toBe(true);
+            expect(menuIs).toBeTruthy();
 
             $menuIcon.triggerHandler('click');
             menuIs = $body.hasClass('menu-hidden');
-            expect(menuIs).toBe(true);
+            expect(menuIs).toBeTruthy();
         });
     });
 
@@ -102,26 +102,50 @@ $(function () {
          * Remember, loadFeed() is asynchronous so this test will require
          * the use of Jasmine's beforeEach and asynchronous done() function.
          */
+        beforeEach(function (done) {
+            // LOAD NEW DATA
+            loadFeed(0, done);
+        });
+
+        it('ensures when the loadFeed there is at least a single .entry element', function () {
+            // VARS
+            expect($('.feed .entry-link').length >= 1).toBeTruthy();
+        });
+    });
+
+    /* TODO: Write a new test suite named "New Feed Selection" */
+    describe('New Feed Selection', function () {
+        /* TODO: Write a test that ensures when a new feed is loaded
+         * by the loadFeed function that the content actually changes.
+         * Remember, loadFeed() is asynchronous.
+         */
         let $container;
-        beforeEach(function(done){
+        let html1, html2;
+        beforeEach(function (done) {
             // VARS
             $container = $('.feed');
             // LOAD NEW DATA
-            loadFeed(0).success(function(){
+            Promise.all([
+                new Promise(function(resolve){
+                    loadFeed(0, function () {
+                        html1 = $container.html();
+                        resolve();
+                    });
+                }),
+                new Promise(function(resolve){
+                    loadFeed(1, function () {
+                        html2 = $container.html();
+                        resolve();
+                    });
+                })
+            ]).then(function () {
                 done();
             });
         });
 
-        /* TODO: Write a new test suite named "New Feed Selection" */
-        describe('New Feed Selection',function(){
-            /* TODO: Write a test that ensures when a new feed is loaded
-            * by the loadFeed function that the content actually changes.
-            * Remember, loadFeed() is asynchronous.
-            */
-            it('content actually changes',function(){
-                // VARS
-                expect($container.find('.entry-link').length >= 1).toBe(true);
-            });
+        it('content actually changes', function () {
+            // VARS
+            expect(html1 != html2).toBeTruthy();
         });
     });
 }());
