@@ -67,7 +67,7 @@ $(function () {
          */
         it('is hidden by default', function () {
             // VARS
-            let $body = $('body')
+            let $body = $('body');
             let menuIsHidden = $body.hasClass('menu-hidden');
             expect(menuIsHidden).toBe(true);
         });
